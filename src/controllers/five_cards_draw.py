@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from schemas.five_cards_draw import MatchIn, MatchOut
+from src.domain.schemas.five_cards_draw import MatchIn, MatchOut
 
-from config.database import get_session
-from services import five_cards_draw as five_cards_draw_service
+from src.config.database import get_session
+from src.services import five_cards_draw as five_cards_draw_service
 
 router = APIRouter()
 

@@ -1,6 +1,7 @@
 from .generic_schema import GenericSchema
-from pydantic import UUID, Field, EmailStr
+from pydantic import Field, EmailStr
 import uuid
+from uuid import UUID
 
 
 class MatchIn(GenericSchema):

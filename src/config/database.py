@@ -8,10 +8,10 @@ load_dotenv()
 
 db = dict(
     user=os.getenv('USER_DB'),
-    password=os.getenv('PASSWORD_DB'),
+    password=os.getenv('PASS_DB'),
     host=os.getenv('HOST_DB'),
     port=os.getenv('PORT_DB') or 5432,
-    database=os.getenv('DATABASE_DB'),
+    database=os.getenv('NAME_DB'),
     schema=os.getenv('SCHEMA_DB')
 )
 

@@ -20,6 +20,7 @@ db['url'] = f"postgresql://{db['user']}:{db['password']}@{db['host']}:{db['port'
 engine = create_engine(db['url'])
 Session = sessionmaker(bind=engine)
 
+
 def get_session():
     session = Session()
     try:

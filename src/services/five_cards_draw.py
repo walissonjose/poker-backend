@@ -1,4 +1,5 @@
-from src.domain.schemas.five_cards_draw import FirstRoundIn, FirstRoundOut, SecondRoundIn, SecondRoundOut
+from src.domain.schemas.five_cards_draw import FirstRoundIn, FirstRoundOut, SecondRoundIn, SecondRoundOut, Login
+from src.consumers import dealer_api as dealer_consumer
 from sqlalchemy.orm import Session
 from src.repositories import five_cards_draw as five_cards_draw_repository
 from src.domain.models.game import Game
@@ -6,6 +7,7 @@ from typing import List
 from collections import Counter
 
 
+# Função para determinar a aposta com base nas cartas atuais
 def first_round(match_in: FirstRoundIn, db: Session):
     game: Game = Game(
         id=match_in.match_id,
@@ -31,14 +33,26 @@ def first_round(match_in: FirstRoundIn, db: Session):
     return first_round_out
 
 
+# Função para determinar a aposta com base nas cartas atuais no segundo round
 def second_round(match_in: SecondRoundIn, db: Session):
     game = five_cards_draw_repository.get_game(match_in.match_id, db)
 
-    game.hand = match_in
+    new_hand = game.hand + match_in.new_cards
     game.opponent_first_bet = match_in.match_bet - game.first_bet
     five_cards_draw_repository.update_game(game, db)
 
-    bet = determine_second_bet(match_in.cards)
+    bet = determine_second_bet(new_hand)
+
+    second_round_out = SecondRoundOut(
+        bet=bet
+    )
+
+    return second_round_out
+
+
+def determine_second_bet(cards):
+    # Lógica para determinar a aposta, você pode personalizar conforme desejado
+    return hand_score(cards)
 
 
 # Função para verificar o valor das cartas
@@ -177,3 +191,17 @@ def is_two_pair(card_counts: dict) -> bool:
 # Função para verificar se a mão é um Pair
 def is_pair(card_counts: dict) -> bool:
     return any(count == 2 for count in card_counts.values())
+
+
+def result(match, db) -> None:
+    game = five_cards_draw_repository.get_game(match.match_id, db)
+    game.result = match.result
+    game.balance = match.your_match_balance
+    print("Game result:", game.result, "Balance:", game.balance)
+    five_cards_draw_repository.update_game(game, db)
+    return None
+
+
+def join_game(login: Login):
+    dealer_consumer.dealer_login(login.id, login.name, login.public_api_url)
+    return login

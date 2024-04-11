@@ -19,8 +19,19 @@ class SecondRoundIn(GenericSchema):
     match_id: UUID = Field(default=uuid.uuid4)
     new_cards: list[str] = []
     match_bet: int = Field(default=5)
-    
+
 
 class SecondRoundOut(GenericSchema):
     bet: int = Field(default=5)
 
+
+class RoundResultIn(GenericSchema):
+    match_id: UUID = Field(default=uuid.uuid4)
+    result: str
+    your_match_balance: int
+
+
+class Login(GenericSchema):
+    id: EmailStr
+    name: str
+    public_api_url: str

@@ -1,9 +1,9 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from config.database import db
 
-metadata = db.MetaData(schema=db['schema'])
-Base = declarative_base()
+metadata = MetaData(schema="app_poker")
+Base = declarative_base(metadata=metadata)
 
 
 class GenericModel(Base):

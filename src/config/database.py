@@ -22,8 +22,8 @@ Session = sessionmaker(bind=engine)
 
 
 def get_session():
-    session = Session()
+    db = Session()
     try:
-        yield session
+        yield db
     finally:
-        session.close()
+        db.close()

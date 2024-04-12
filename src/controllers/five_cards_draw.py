@@ -22,7 +22,7 @@ def second_round(match: SecondRoundIn, db: Session = Depends(get_session)):
     return five_cards_draw_service.second_round(match, db)
 
 
-@router.post("/result", summary="Result of Five Cards Draw", tags=[POKER_TAG], response_model=RoundResultIn)
+@router.post("/result", summary="Result of Five Cards Draw", tags=[POKER_TAG])
 def result(match: RoundResultIn, db: Session = Depends(get_session)):
     return five_cards_draw_service.result(match, db)
 

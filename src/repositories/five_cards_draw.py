@@ -14,7 +14,6 @@ def get_game(match_id, db):
 
 
 def update_game(game: Game, db: Session):
-    db.add(game)
     db.commit()
     db.refresh(game)
     return game

@@ -1,4 +1,5 @@
-from src.domain.schemas.five_cards_draw import FirstRoundIn, FirstRoundOut, SecondRoundIn, SecondRoundOut, Login
+from src.domain.schemas.five_cards_draw import FirstRoundIn, FirstRoundOut, SecondRoundIn, SecondRoundOut, Login, \
+    RoundResultIn
 from src.consumers import dealer_api as dealer_consumer
 from sqlalchemy.orm import Session
 from src.repositories import five_cards_draw as five_cards_draw_repository
@@ -74,6 +75,16 @@ def is_straight(cards: List[str]) -> bool:
 
 
 def choose_cards_to_swap(cards: List[str]) -> List[str]:
+    if same_suit(cards) and is_straight(cards):  # Se houver um flush ou uma sequência
+        print("Flush or straight detected.")
+        return []  # Não trocar nenhuma carta
+
+    print("No four of a kind detected.")
+    # Verificar se há uma mão muito fraca (por exemplo, sem pares, sem sequências, sem flush)
+    if len(set(card[0] for card in cards)) >= 4:  # Se houver pelo menos 4 valores de cartas diferentes
+        print("Weak hand detected.")
+        return sorted(cards, key=card_value)[:2]  # Trocar apenas as duas cartas mais baixas
+
     # Contar o número de ocorrências de cada naipe
     suit_counts = Counter(card[-1] for card in cards)
 
@@ -85,17 +96,6 @@ def choose_cards_to_swap(cards: List[str]) -> List[str]:
             print("Four of a kind detected. Suit:", suit)
             # Trocar apenas a carta de outro naipe e tentar obter um flush
             return [card for card in cards if card[-1] != suit]
-
-    print("No four of a kind detected.")
-
-    # Verificar se há uma mão muito fraca (por exemplo, sem pares, sem sequências, sem flush)
-    if len(set(card[0] for card in cards)) >= 4:  # Se houver pelo menos 4 valores de cartas diferentes
-        print("Weak hand detected.")
-        return sorted(cards, key=card_value)[:2]  # Trocar apenas as duas cartas mais baixas
-
-    if same_suit(cards) and is_straight(cards):  # Se houver um flush ou uma sequência
-        print("Flush or straight detected.")
-        return []  # Não trocar nenhuma carta
 
     print("No special condition detected.")
 
@@ -193,7 +193,7 @@ def is_pair(card_counts: dict) -> bool:
     return any(count == 2 for count in card_counts.values())
 
 
-def result(match, db) -> None:
+def result(match: RoundResultIn, db: Session) -> None:
     game = five_cards_draw_repository.get_game(match.match_id, db)
     game.result = match.result
     game.balance = match.your_match_balance
